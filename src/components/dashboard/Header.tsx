@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Bell, Mail, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import NotificationPanel from "./NotificationPanel";
 
 const Header = () => {
   return (
@@ -30,14 +31,7 @@ const Header = () => {
           >
             <Mail className="w-5 h-5" />
           </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="relative text-muted-foreground hover:text-foreground hover:bg-background/30"
-          >
-            <Bell className="w-5 h-5" />
-            <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500" />
-          </Button>
+          <NotificationPanel />
         </div>
 
         {/* User Profile */}

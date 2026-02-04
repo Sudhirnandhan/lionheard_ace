@@ -18,7 +18,7 @@ const Layout = () => {
                 }}
             >
                 {/* Dark Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/85 to-background/95" />
+                <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/90 to-background/98" />
 
                 {/* Particles / Stars effect */}
                 <div className="absolute inset-0 particles-bg" />

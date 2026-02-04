@@ -1,25 +1,147 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Download, TrendingUp, Users, DollarSign, Activity } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import RealTimeDashboard from "@/components/dashboard/RealTimeDashboard";
+import ConversionFunnelChart from "@/components/dashboard/ConversionFunnelChart";
+import SalesPerformanceDashboard from "@/components/dashboard/SalesPerformanceDashboard";
+import WorkflowAutomation from "@/components/dashboard/WorkflowAutomation";
+import CustomReportBuilder from "@/components/dashboard/CustomReportBuilder";
+import { AnalyticsService } from "@/services/analytics";
+import { Lead, SalesExecutive, ConversionFunnel, SalesPerformance } from "@/types";
 
 const Analytics = () => {
-    // Mock Data for Charts
-    const revenueData = [
-        { name: "Jan", revenue: 4000, profit: 2400 },
-        { name: "Feb", revenue: 3000, profit: 1398 },
-        { name: "Mar", revenue: 2000, profit: 9800 },
-        { name: "Apr", revenue: 2780, profit: 3908 },
+    // Mock data for demonstration
+    const mockLeads: Lead[] = [
+        {
+            id: "1",
+            name: "John Carter",
+            company: "TechFlow Systems",
+            email: "john.carter@techflow.com",
+            phone: "+1 (555) 123-4567",
+            status: "new",
+            priority: "high",
+            source: "Website",
+            lastContact: "2 days ago",
+            value: 12000,
+            assignedTo: "exec1",
+            createdAt: new Date("2024-01-15"),
+            updatedAt: new Date("2024-01-17"),
+        },
+        {
+            id: "2",
+            name: "Sarah Miller",
+            company: "Innovate Corp",
+            email: "s.miller@innovate.co",
+            phone: "+1 (555) 987-6543",
+            status: "contacted",
+            priority: "medium",
+            source: "LinkedIn",
+            lastContact: "1 day ago",
+            value: 25000,
+            assignedTo: "exec2",
+            createdAt: new Date("2024-01-10"),
+            updatedAt: new Date("2024-01-18"),
+        },
+        {
+            id: "3",
+            name: "Michael Chen",
+            company: "Future Dynamics",
+            email: "m.chen@futuredyn.com",
+            phone: "+1 (555) 456-7890",
+            status: "qualified",
+            priority: "hot",
+            source: "Referral",
+            lastContact: "4 hours ago",
+            value: 8500,
+            assignedTo: "exec1",
+            createdAt: new Date("2024-01-12"),
+            updatedAt: new Date("2024-01-19"),
+        },
+        {
+            id: "4",
+            name: "Jessica Davis",
+            company: "Alpha Solutions",
+            email: "j.davis@alpha.io",
+            phone: "+1 (555) 234-5678",
+            status: "proposal",
+            priority: "high",
+            source: "Conference",
+            lastContact: "1 week ago",
+            value: 45000,
+            assignedTo: "exec3",
+            createdAt: new Date("2024-01-05"),
+            updatedAt: new Date("2024-01-15"),
+        },
+        {
+            id: "5",
+            name: "David Wilson",
+            company: "Omega Group",
+            email: "d.wilson@omega.inc",
+            phone: "+1 (555) 876-5432",
+            status: "won",
+            priority: "high",
+            source: "Direct",
+            lastContact: "2 weeks ago",
+            value: 150000,
+            assignedTo: "exec1",
+            createdAt: new Date("2024-01-01"),
+            updatedAt: new Date("2024-01-20"),
+        },
     ];
 
-    const leadSourceData = [
-        { name: "Organic Search", value: 400 },
-        { name: "Social Media", value: 300 },
-        { name: "Direct", value: 300 },
+    const mockExecutives: SalesExecutive[] = [
+        {
+            id: "exec1",
+            name: "Alex Johnson",
+            email: "alex@company.com",
+            workload: 15,
+            expertise: ["Enterprise", "SaaS"],
+            location: ["North America", "Europe"],
+            conversionRate: 42.5,
+            responseTime: 2.3,
+            totalDeals: 45,
+            wonDeals: 19,
+            lostDeals: 8,
+        },
+        {
+            id: "exec2",
+            name: "Maria Garcia",
+            email: "maria@company.com",
+            workload: 12,
+            expertise: ["SMB", "Retail"],
+            location: ["North America"],
+            conversionRate: 38.2,
+            responseTime: 3.1,
+            totalDeals: 38,
+            wonDeals: 14,
+            lostDeals: 10,
+        },
+        {
+            id: "exec3",
+            name: "James Lee",
+            email: "james@company.com",
+            workload: 18,
+            expertise: ["Enterprise", "Finance"],
+            location: ["Asia Pacific"],
+            conversionRate: 45.8,
+            responseTime: 1.9,
+            totalDeals: 52,
+            wonDeals: 24,
+            lostDeals: 6,
+        },
     ];
 
-    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+    const [funnelData, setFunnelData] = useState<ConversionFunnel[]>([]);
+    const [performanceData, setPerformanceData] = useState<SalesPerformance[]>([]);
+
+    useEffect(() => {
+        // Calculate analytics data
+        const funnel = AnalyticsService.calculateConversionFunnel(mockLeads);
+        const performance = AnalyticsService.calculateSalesPerformance(mockLeads, mockExecutives);
+
+        setFunnelData(funnel);
+        setPerformanceData(performance);
+    }, []);
 
     return (
         <div className="flex flex-col gap-6 p-4">
@@ -28,109 +150,63 @@ const Analytics = () => {
                 animate={{ opacity: 1, y: 0 }}
                 className="flex justify-between items-center"
             >
-                <h2 className="text-2xl font-bold font-display text-glow">Analytics Overview</h2>
-                <Button variant="outline" className="glass-card">
-                    <Download className="w-4 h-4 mr-2" />
-                    Export Report
-                </Button>
+                <div>
+                    <h2 className="text-2xl font-bold font-display text-glow">Advanced Analytics & Automation</h2>
+                    <p className="text-sm text-muted-foreground mt-1">
+                        Real-time insights, performance tracking, and workflow automation
+                    </p>
+                </div>
             </motion.div>
 
-            {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                {[
-                    { title: "Total Revenue", value: "$45,231.89", icon: DollarSign, color: "text-emerald-500" },
-                    { title: "Active Users", value: "+2350", icon: Users, color: "text-blue-500" },
-                    { title: "Bounce Rate", value: "12.5%", icon: Activity, color: "text-rose-500" },
-                    { title: "Conversion Rate", value: "4.35%", icon: TrendingUp, color: "text-purple-500" },
-                ].map((item, index) => (
+            <Tabs defaultValue="realtime" className="w-full">
+                <TabsList className="glass-card border-white/10 mb-6">
+                    <TabsTrigger value="realtime">Real-Time Dashboard</TabsTrigger>
+                    <TabsTrigger value="funnel">Conversion Funnel</TabsTrigger>
+                    <TabsTrigger value="performance">Sales Performance</TabsTrigger>
+                    <TabsTrigger value="automation">Automation</TabsTrigger>
+                    <TabsTrigger value="reports">Custom Reports</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="realtime" className="space-y-6">
+                    <RealTimeDashboard />
+                </TabsContent>
+
+                <TabsContent value="funnel" className="space-y-6">
                     <motion.div
-                        key={index}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
                     >
-                        <Card className="glass-card border-none hover:bg-white/5 transition-colors">
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium text-muted-foreground">{item.title}</CardTitle>
-                                <item.icon className={`h-4 w-4 ${item.color}`} />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">{item.value}</div>
-                                <p className="text-xs text-muted-foreground">+20.1% from last month</p>
-                            </CardContent>
-                        </Card>
+                        <ConversionFunnelChart data={funnelData} />
                     </motion.div>
-                ))}
-            </div>
+                </TabsContent>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Revenue Chart */}
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.3 }}
-                    className="col-span-1"
-                >
-                    <Card className="glass-card border-none h-[400px]">
-                        <CardHeader>
-                            <CardTitle>Revenue Overview</CardTitle>
-                        </CardHeader>
-                        <CardContent className="pl-0">
-                            <ResponsiveContainer width="100%" height={350}>
-                                <AreaChart data={revenueData}>
-                                    <defs>
-                                        <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
-                                            <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
-                                        </linearGradient>
-                                    </defs>
-                                    <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                                    <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `$${value}`} />
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#333" />
-                                    <Tooltip contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', border: 'none', borderRadius: '8px' }} />
-                                    <Area type="monotone" dataKey="revenue" stroke="#8884d8" fillOpacity={1} fill="url(#colorRevenue)" />
-                                </AreaChart>
-                            </ResponsiveContainer>
-                        </CardContent>
-                    </Card>
-                </motion.div>
+                <TabsContent value="performance" className="space-y-6">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                    >
+                        <SalesPerformanceDashboard data={performanceData} />
+                    </motion.div>
+                </TabsContent>
 
-                {/* Lead Sources Pie Chart */}
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.4 }}
-                    className="col-span-1"
-                >
-                    <Card className="glass-card border-none h-[400px]">
-                        <CardHeader>
-                            <CardTitle>Lead Sources</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <ResponsiveContainer width="100%" height={350}>
-                                <PieChart>
-                                    <Pie
-                                        data={leadSourceData}
-                                        cx="50%"
-                                        cy="50%"
-                                        innerRadius={60}
-                                        outerRadius={100}
-                                        fill="#8884d8"
-                                        paddingAngle={5}
-                                        dataKey="value"
-                                    >
-                                        {leadSourceData.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                        ))}
-                                    </Pie>
-                                    <Tooltip contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', border: 'none', borderRadius: '8px' }} />
-                                    <Legend />
-                                </PieChart>
-                            </ResponsiveContainer>
-                        </CardContent>
-                    </Card>
-                </motion.div>
-            </div>
+                <TabsContent value="automation" className="space-y-6">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                    >
+                        <WorkflowAutomation />
+                    </motion.div>
+                </TabsContent>
+
+                <TabsContent value="reports" className="space-y-6">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                    >
+                        <CustomReportBuilder />
+                    </motion.div>
+                </TabsContent>
+            </Tabs>
         </div>
     );
 };
