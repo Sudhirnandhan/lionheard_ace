@@ -10,9 +10,13 @@ import QuickActions from "@/components/dashboard/QuickActions";
 
 const Index = () => {
   return (
-    <div className="flex flex-col gap-4">
-      {/* KPI Cards Row */}
-      <div className="grid grid-cols-4 gap-4">
+    <div className="flex flex-col gap-6 p-6">
+      {/* KPI Cards Row - Full Width */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+      >
         <KPICard
           title="Total Leads"
           value="1,250"
@@ -53,33 +57,68 @@ const Index = () => {
           glowColor="green"
           delay={0.3}
         />
-      </div>
+      </motion.div>
 
-      {/* Main Content Grid */}
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 pb-6">
-        {/* Left Column - Main Operational Area */}
-        <div className="xl:col-span-2 flex flex-col gap-6">
-          {/* Lead Pipeline */}
-          <LeadPipeline />
+      {/* Main Dashboard Grid - Optimized Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Left Section - Takes 8 columns on large screens */}
+        <div className="lg:col-span-8 flex flex-col gap-6">
+          {/* Lead Pipeline - Full Width */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <LeadPipeline />
+          </motion.div>
 
-          {/* Recent Activities */}
-          <RecentActivities />
+          {/* Bottom Row - Team Performance & AI Scoring Side by Side */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <TeamPerformance />
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              <AILeadScoring />
+            </motion.div>
+          </div>
         </div>
 
-        {/* Right Column - Support & Metrics */}
-        <div className="flex flex-col gap-6">
+        {/* Right Sidebar - Takes 4 columns on large screens */}
+        <div className="lg:col-span-4 flex flex-col gap-6">
           {/* Upcoming Tasks */}
-          <UpcomingTasks />
-
-          {/* Team Performance */}
-          <TeamPerformance />
-
-          {/* AI Lead Scoring */}
-          <AILeadScoring />
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <UpcomingTasks />
+          </motion.div>
 
           {/* Quick Actions */}
-          <QuickActions />
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <QuickActions />
+          </motion.div>
+
+          {/* Recent Activities */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <RecentActivities />
+          </motion.div>
         </div>
       </div>
 
@@ -88,14 +127,14 @@ const Index = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.8 }}
-        className="flex items-center justify-between py-3 px-4 glass-card rounded-xl"
+        className="flex items-center justify-between py-4 px-6 glass-card rounded-xl border border-white/10"
       >
-        <button className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-          <FileText className="w-4 h-4" />
+        <button className="flex items-center gap-2 text-sm text-muted-foreground hover:text-cyan-400 transition-colors group">
+          <FileText className="w-4 h-4 group-hover:scale-110 transition-transform" />
           <span>Export Report</span>
         </button>
         <div className="flex items-center gap-4">
-          <span className="text-xs text-muted-foreground">© 2026 Lead Management ACE</span>
+          <span className="text-xs text-muted-foreground">© 2026 Lead Management ACE • Powered by AI</span>
         </div>
       </motion.footer>
     </div>
